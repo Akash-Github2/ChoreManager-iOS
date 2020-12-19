@@ -8,18 +8,22 @@
 import SwiftUI
 import CoreData
 
+
+
 class DataClass: ObservableObject {
     @Published var titleTxt = "Today"
-    @Published var selectedArr: [Bool] = [true, false, false, false, false, false, false]
+    @Published var selectedInd = 0
     let shortToLongWeekDayMap = ["MON": "Monday", "TUE": "Tuesday", "WED": "Wednesday", "THU": "Thursday", "FRI": "Friday", "SAT": "Saturday", "SUN": "Sunday"]
+    @Published var daysOfWeekArr: [String] = ["", "", "", "", "", "", ""]
+    @Published var dayNumArr: [String] = ["", "", "", "", "", "", ""]
+    @Published var anyTasksArr: [Bool] = [true, false, true, true, false, true, true]
+    @Published var datesOfWeekArr: [Date] = [Date(), Date(), Date(), Date(), Date(), Date(), Date()]
 }
 
 struct ContentView: View {
-    
-    @State var daysOfWeekArr: [String] = ["", "", "", "", "", "", ""]
-    @State var dayNumArr: [String] = ["", "", "", "", "", "", ""]
-    @State var anyTasksArr: [Bool] = [true, false, true, true, false, true, true]
     @ObservedObject var data = DataClass()
+    @Environment(\.managedObjectContext) var context
+    @FetchRequest(fetchRequest: TaskEntry.getAllRecords()) var taskEntries: FetchedResults<TaskEntry>
     
     var body: some View {
         NavigationView {
@@ -43,7 +47,7 @@ struct ContentView: View {
                 //Horizontal Scrollbar of the days of the week
                 HStack (spacing: 4) {
                     ForEach((0..<7), id: \.self) { i in
-                        DayOfWeekSmallIcon(ind: i, dayOfWeek: daysOfWeekArr[i], dayNumStr: dayNumArr[i], anyTasks: anyTasksArr[i], data: data)
+                        DayOfWeekSmallIcon(ind: i, data: data)
                     }
                 }
                 .padding(.horizontal, 12)
@@ -51,10 +55,26 @@ struct ContentView: View {
                 .padding(.bottom, 5)
                 
                 ScrollView {
-                    ToDoListRow(completed: false, taskName: "Do Groceries")
-                    ToDoListRow(completed: false, taskName: "Do Dishes")
-                    ToDoListRow(completed: false, taskName: "Go for Run")
-                    ToDoListRow(completed: false, taskName: "Do Homework")
+                    if !isDayEmpty() {
+                        ForEach(taskEntries) { entry in
+                            //Each cell
+                            if isDateSameDay(date1: data.datesOfWeekArr[data.selectedInd], date2: entry.dueDate!) {
+                                ToDoListRow(completed: entry.isCompleted == "1", taskName: entry.name ?? "", taskEntry: entry)
+                            }
+                            
+                        }.onDelete { indexSet in
+                            let deleteItem = taskEntries[indexSet.first!]
+                            context.delete(deleteItem)
+                            
+                            do {
+                                try context.save()
+                            } catch {
+                                print(error)
+                            }
+                        }
+                    } else {
+                        Text("No tasks left for \(data.shortToLongWeekDayMap[data.daysOfWeekArr[data.selectedInd]]!)")
+                    }
                 }
                 
                 Spacer()
@@ -72,8 +92,10 @@ struct ContentView: View {
                 .offset(x:-12, y:32)
             )
             .onAppear() {
-                daysOfWeekArr = getDaysOfWeekInfo()
-                dayNumArr = getDayNumsInfo()
+                data.daysOfWeekArr = getDaysOfWeekInfo()
+                data.dayNumArr = getDayNumsInfo()
+                data.datesOfWeekArr = getDatesOfWeek()
+                addItem(dueDate: Date().addingTimeInterval(TimeInterval(3*86400)), isCompleted: "0", name: "Do Dishes", taskDescr: "N/A", usersList: "Joe")
             }
         }
         
@@ -105,7 +127,52 @@ struct ContentView: View {
         return daysArr
     }
     
-
+    func getDatesOfWeek() -> [Date] {
+        var datesArr: [Date] = []
+        for i in 0..<7 {
+            let date = Date().addingTimeInterval(TimeInterval(i*86400))
+            datesArr.append(date)
+        }
+        return datesArr
+    }
+    
+    func isDayEmpty() -> Bool {
+        for taskEntry in taskEntries {
+            if isDateSameDay(date1: data.datesOfWeekArr[data.selectedInd], date2: taskEntry.dueDate!) {
+                return false
+            }
+        }
+        return true
+    }
+    
+    func isDateSameDay(date1: Date, date2: Date) -> Bool {
+        let df = DateFormatter()
+        df.dateFormat = "EEE"
+        let dayOfWeek1: String = df.string(from: date1).uppercased()
+        let dayOfWeek2: String = df.string(from: date2).uppercased()
+        if dayOfWeek1 != dayOfWeek2 {
+            return false
+        }
+        let diff = abs(date1.timeIntervalSinceReferenceDate - date2.timeIntervalSinceReferenceDate)
+        return diff < 86400
+    }
+    
+    //Core data
+    func addItem(dueDate: Date, isCompleted: String, name: String, taskDescr: String, usersList: String) {
+        
+        let entry = TaskEntry(context: context)
+        entry.dueDate = dueDate
+        entry.isCompleted = isCompleted
+        entry.name = name
+        entry.taskDescr = taskDescr
+        entry.usersList = usersList
+        
+        do {
+            try context.save()
+        } catch {
+            print(error)
+        }
+    }
 }
 
 struct CircleTimer: View {
@@ -128,53 +195,75 @@ struct CircleTimer: View {
 struct DayOfWeekSmallIcon: View {
     
     var ind: Int
-    var dayOfWeek: String
-    var dayNumStr: String
-    var anyTasks: Bool
     @ObservedObject var data: DataClass
+    @Environment(\.managedObjectContext) var context
+    @FetchRequest(fetchRequest: TaskEntry.getAllRecords()) var taskEntries: FetchedResults<TaskEntry>
     
     var body: some View {
         VStack (alignment: .center) {
-            Text(dayOfWeek)
+            Text(data.daysOfWeekArr[ind])
                 .fontWeight(.medium)
                 .padding(.bottom, 2)
-            Text(dayNumStr)
+            Text(data.dayNumArr[ind])
                 .fontWeight(.semibold)
                 .padding(.bottom, -1)
             Circle()
                 .frame(width:5,height:5)
                 .foregroundColor(.blue)
-                .opacity(anyTasks ? 1 : 0)
+                .opacity(!isDayEmpty() ? 1 : 0)
         }
         .frame(width: (UIScreen.main.bounds.width - 30)/7 - 5)
         .padding(.vertical, 9)
-        .background(data.selectedArr[ind] ? Color.blue.opacity(0.15) : Color.clear)
+        .background(ind == data.selectedInd ? Color.blue.opacity(0.15) : Color.clear)
         .cornerRadius(7)
         .onTapGesture {
-            for i in 0..<7 {
-                data.selectedArr[i] = false
-            }
-            data.selectedArr[ind].toggle()
+            data.selectedInd = ind
             if ind == 0 {
                 data.titleTxt = "Today"
             } else if ind == 1 {
                 data.titleTxt = "Tomorrow"
             } else { //ind > 1
-                data.titleTxt = data.shortToLongWeekDayMap[dayOfWeek] ?? "Today"
+                data.titleTxt = data.shortToLongWeekDayMap[data.daysOfWeekArr[ind]] ?? "Today"
             }
         }
+    }
+    
+    func isDayEmpty() -> Bool {
+        for taskEntry in taskEntries {
+            if isDateSameDay(date1: data.datesOfWeekArr[ind], date2: taskEntry.dueDate!) {
+                return false
+            }
+        }
+        return true
+    }
+    func isDateSameDay(date1: Date, date2: Date) -> Bool {
+        let df = DateFormatter()
+        df.dateFormat = "EEE"
+        let dayOfWeek1: String = df.string(from: date1).uppercased()
+        let dayOfWeek2: String = df.string(from: date2).uppercased()
+        if dayOfWeek1 != dayOfWeek2 {
+            return false
+        }
+        let diff = abs(date1.timeIntervalSinceReferenceDate - date2.timeIntervalSinceReferenceDate)
+        return diff < 86400
     }
 }
 
 struct ToDoListRow: View {
     
+    @Environment(\.managedObjectContext) var context
+    @FetchRequest(fetchRequest: TaskEntry.getAllRecords()) var taskEntries: FetchedResults<TaskEntry>
     @State var completed = false
     var taskName: String
+    var taskEntry: TaskEntry
     
     var body: some View {
         HStack {
             Button(action: {
                 completed.toggle()
+                withAnimation {
+                    removeEntry()
+                }
             }) {
                 Image(systemName: "checkmark.circle")
                     .font(Font.title.weight(.bold))
@@ -193,5 +282,14 @@ struct ToDoListRow: View {
         .background(Color.gray.opacity(0.1))
         .cornerRadius(25)
         .padding(.bottom, 2)
+    }
+    
+    func removeEntry() {
+        context.delete(taskEntry)
+        do {
+            try context.save()
+        } catch {
+            print(error)
+        }
     }
 }

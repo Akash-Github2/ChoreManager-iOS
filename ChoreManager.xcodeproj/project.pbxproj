@@ -13,6 +13,7 @@
 		38454059258DC7D300BBA763 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 38454058258DC7D300BBA763 /* Preview Assets.xcassets */; };
 		3845405B258DC7D300BBA763 /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3845405A258DC7D300BBA763 /* Persistence.swift */; };
 		3845405E258DC7D300BBA763 /* ChoreManager.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 3845405C258DC7D300BBA763 /* ChoreManager.xcdatamodeld */; };
+		38BCB695258E54D90092D1D1 /* TaskEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38BCB694258E54D90092D1D1 /* TaskEntry.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +25,7 @@
 		3845405A258DC7D300BBA763 /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
 		3845405D258DC7D300BBA763 /* ChoreManager.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ChoreManager.xcdatamodel; sourceTree = "<group>"; };
 		3845405F258DC7D300BBA763 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		38BCB694258E54D90092D1D1 /* TaskEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskEntry.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,6 +63,7 @@
 				38454055258DC7D300BBA763 /* Assets.xcassets */,
 				3845405A258DC7D300BBA763 /* Persistence.swift */,
 				3845405F258DC7D300BBA763 /* Info.plist */,
+				38BCB694258E54D90092D1D1 /* TaskEntry.swift */,
 				3845405C258DC7D300BBA763 /* ChoreManager.xcdatamodeld */,
 				38454057258DC7D300BBA763 /* Preview Content */,
 			);
@@ -146,6 +149,7 @@
 			files = (
 				3845405B258DC7D300BBA763 /* Persistence.swift in Sources */,
 				3845405E258DC7D300BBA763 /* ChoreManager.xcdatamodeld in Sources */,
+				38BCB695258E54D90092D1D1 /* TaskEntry.swift in Sources */,
 				38454054258DC7CE00BBA763 /* ContentView.swift in Sources */,
 				38454052258DC7CE00BBA763 /* ChoreManagerApp.swift in Sources */,
 			);
