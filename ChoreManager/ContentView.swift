@@ -8,28 +8,27 @@
 import SwiftUI
 import CoreData
 
+class DataClass: ObservableObject {
+    @Published var titleTxt = "Today"
+    @Published var selectedArr: [Bool] = [true, false, false, false, false, false, false]
+    let shortToLongWeekDayMap = ["MON": "Monday", "TUE": "Tuesday", "WED": "Wednesday", "THU": "Thursday", "FRI": "Friday", "SAT": "Saturday", "SUN": "Sunday"]
+}
+
 struct ContentView: View {
+    
+    @State var daysOfWeekArr: [String] = ["", "", "", "", "", "", ""]
+    @State var dayNumArr: [String] = ["", "", "", "", "", "", ""]
+    @State var anyTasksArr: [Bool] = [true, false, true, true, false, true, true]
+    @ObservedObject var data = DataClass()
     
     var body: some View {
         NavigationView {
             VStack {
-                ScrollView (.horizontal) {
-                    HStack (spacing: 30) {
-                        UserProfileCircle(name: "All")
-                        UserProfileCircle(name: "Akash")
-                        UserProfileCircle(name: "Aidan")
-                        UserProfileCircle(name: "John")
-                        UserProfileCircle(name: "Nick")
-                        UserProfileCircle(name: "Joe")
-                    }
-                    .padding(.leading, 20)
-                    .padding(.top, 10)
-                }
-                .padding(.bottom, 20)
+                
                 HStack {
-                    Text("Today")
-                        .font(.system(size: 28))
-                        .fontWeight(.medium)
+                    Text(data.titleTxt)
+                        .font(.system(size: 25))
+                        .fontWeight(.bold)
                         .padding(.leading, 15)
                     Spacer()
                     ZStack {
@@ -39,9 +38,17 @@ struct ContentView: View {
                     }
                     .padding(.trailing, 15)
                 }
+                .padding(.top, 15)
                 
                 //Horizontal Scrollbar of the days of the week
-                Scroll
+                HStack (spacing: 4) {
+                    ForEach((0..<7), id: \.self) { i in
+                        DayOfWeekSmallIcon(ind: i, dayOfWeek: daysOfWeekArr[i], dayNumStr: dayNumArr[i], anyTasks: anyTasksArr[i], data: data)
+                    }
+                }
+                .padding(.horizontal, 12)
+                .padding(.top, 10)
+                .padding(.bottom, 5)
                 
                 ScrollView {
                     ToDoListRow(completed: false, taskName: "Do Groceries")
@@ -58,15 +65,48 @@ struct ContentView: View {
                 Button(action: {
                     print("Add New Item")
                 }) {
-                    Image(systemName: "plus")
+                    Image(systemName: "plus.circle.fill")
                         .font(Font.title.weight(.bold))
                         .frame(width: 10, height: 10)
                 }
                 .offset(x:-5, y:25)
             )
+            .onAppear() {
+                daysOfWeekArr = getDaysOfWeekInfo()
+                print(daysOfWeekArr)
+                dayNumArr = getDayNumsInfo()
+                print(dayNumArr)
+            }
         }
         
     }
+    
+    func getDayNumsInfo() -> [String] {
+        var dayNums: [String] = []
+        for i in 0..<7 {
+            let date = Date().addingTimeInterval(TimeInterval(i*86400))
+            let df = DateFormatter()
+            df.dateFormat = "dd"
+            dayNums.append(df.string(from: date))
+        }
+        return dayNums
+    }
+    
+    func getDaysOfWeekInfo() -> [String] {
+        let date = Date()
+        let df = DateFormatter()
+        df.dateFormat = "EEE"
+        let dayOfWeek = df.string(from: date)
+        var daysArr = df.shortWeekdaySymbols!
+        while dayOfWeek != daysArr[0] {
+            daysArr.append(daysArr.remove(at: 0))
+        }
+        for i in 0..<daysArr.count {
+            daysArr[i] = daysArr[i].uppercased()
+        }
+        return daysArr
+    }
+    
 
 }
 
@@ -87,16 +127,43 @@ struct CircleTimer: View {
     }
 }
 
-struct UserProfileCircle: View {
+struct DayOfWeekSmallIcon: View {
     
-    var name: String
+    var ind: Int
+    var dayOfWeek: String
+    var dayNumStr: String
+    var anyTasks: Bool
+    @ObservedObject var data: DataClass
     
     var body: some View {
-        VStack {
+        VStack (alignment: .center) {
+            Text(dayOfWeek)
+                .fontWeight(.medium)
+                .padding(.bottom, 2)
+            Text(dayNumStr)
+                .fontWeight(.medium)
+                .padding(.bottom, -1)
             Circle()
-                .foregroundColor(Color.red.opacity(0.5))
-                .frame(width: 20, height: 20)
-            Text(name)
+                .frame(width:5,height:5)
+                .foregroundColor(.blue)
+                .opacity(anyTasks ? 1 : 0)
+        }
+        .padding(.horizontal, 5)
+        .padding(.vertical, 9)
+        .background(data.selectedArr[ind] ? Color.blue.opacity(0.15) : Color.clear)
+        .cornerRadius(7)
+        .onTapGesture {
+            for i in 0..<7 {
+                data.selectedArr[i] = false
+            }
+            data.selectedArr[ind].toggle()
+            if ind == 0 {
+                data.titleTxt = "Today"
+            } else if ind == 1 {
+                data.titleTxt = "Tomorrow"
+            } else { //ind > 1
+                data.titleTxt = data.shortToLongWeekDayMap[dayOfWeek] ?? "Today"
+            }
         }
     }
 }
@@ -105,7 +172,6 @@ struct ToDoListRow: View {
     
     @State var completed = false
     var taskName: String
-    
     
     var body: some View {
         HStack {
