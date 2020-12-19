@@ -9,72 +9,125 @@ import SwiftUI
 import CoreData
 
 struct ContentView: View {
-    @Environment(\.managedObjectContext) private var viewContext
-
-    @FetchRequest(
-        sortDescriptors: [NSSortDescriptor(keyPath: \Item.timestamp, ascending: true)],
-        animation: .default)
-    private var items: FetchedResults<Item>
-
+    
     var body: some View {
-        List {
-            ForEach(items) { item in
-                Text("Item at \(item.timestamp!, formatter: itemFormatter)")
+        NavigationView {
+            VStack {
+                ScrollView (.horizontal) {
+                    HStack (spacing: 30) {
+                        UserProfileCircle(name: "All")
+                        UserProfileCircle(name: "Akash")
+                        UserProfileCircle(name: "Aidan")
+                        UserProfileCircle(name: "John")
+                        UserProfileCircle(name: "Nick")
+                        UserProfileCircle(name: "Joe")
+                    }
+                    .padding(.leading, 20)
+                    .padding(.top, 10)
+                }
+                .padding(.bottom, 20)
+                HStack {
+                    Text("Today")
+                        .font(.system(size: 28))
+                        .fontWeight(.medium)
+                        .padding(.leading, 15)
+                    Spacer()
+                    ZStack {
+                        CircleTimer()
+                        Text("4")
+                            .fontWeight(.medium)
+                    }
+                    .padding(.trailing, 15)
+                }
+                
+                //Horizontal Scrollbar of the days of the week
+                Scroll
+                
+                ScrollView {
+                    ToDoListRow(completed: false, taskName: "Do Groceries")
+                    ToDoListRow(completed: false, taskName: "Do Dishes")
+                    ToDoListRow(completed: false, taskName: "Go for Run")
+                    ToDoListRow(completed: false, taskName: "Do Homework")
+                }
+                
+                Spacer()
             }
-            .onDelete(perform: deleteItems)
+            
+            .navigationBarTitle("Chore Manager")
+            .navigationBarItems(trailing:
+                Button(action: {
+                    print("Add New Item")
+                }) {
+                    Image(systemName: "plus")
+                        .font(Font.title.weight(.bold))
+                        .frame(width: 10, height: 10)
+                }
+                .offset(x:-5, y:25)
+            )
         }
-        .toolbar {
-            #if os(iOS)
-            EditButton()
-            #endif
-
-            Button(action: addItem) {
-                Label("Add Item", systemImage: "plus")
-            }
-        }
+        
     }
 
-    private func addItem() {
-        withAnimation {
-            let newItem = Item(context: viewContext)
-            newItem.timestamp = Date()
+}
 
-            do {
-                try viewContext.save()
-            } catch {
-                // Replace this implementation with code to handle the error appropriately.
-                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                let nsError = error as NSError
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
-            }
+struct CircleTimer: View {
+    
+    var body: some View {
+        ZStack {
+            Circle()
+                .trim(from: 0, to: 1)
+                .stroke(Color.black.opacity(0.09), style: StrokeStyle(lineWidth: 5, lineCap: .round))
+                .frame(width: 40, height: 40)
+            Circle()
+                .trim(from: 0, to: CGFloat(6) / CGFloat(10))
+                .stroke(Color.green, style: StrokeStyle(lineWidth: 5, lineCap: .round))
+                .frame(width: 40, height: 40)
         }
+        .rotationEffect(.init(degrees: -90))
     }
+}
 
-    private func deleteItems(offsets: IndexSet) {
-        withAnimation {
-            offsets.map { items[$0] }.forEach(viewContext.delete)
-
-            do {
-                try viewContext.save()
-            } catch {
-                // Replace this implementation with code to handle the error appropriately.
-                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                let nsError = error as NSError
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
-            }
+struct UserProfileCircle: View {
+    
+    var name: String
+    
+    var body: some View {
+        VStack {
+            Circle()
+                .foregroundColor(Color.red.opacity(0.5))
+                .frame(width: 20, height: 20)
+            Text(name)
         }
     }
 }
 
-private let itemFormatter: DateFormatter = {
-    let formatter = DateFormatter()
-    formatter.dateStyle = .short
-    formatter.timeStyle = .medium
-    return formatter
-}()
-
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+struct ToDoListRow: View {
+    
+    @State var completed = false
+    var taskName: String
+    
+    
+    var body: some View {
+        HStack {
+            Button(action: {
+                completed.toggle()
+            }) {
+                Image(systemName: "checkmark.circle")
+                    .font(Font.title.weight(.bold))
+                    .foregroundColor(Color.green)
+                    .frame(width: 30, height: 30)
+                    .opacity(completed ? 1 : 0.2)
+            }
+            .padding(.leading, 15)
+            .padding(.trailing, 15)
+            Text(taskName)
+                .font(.system(size: 25))
+                .fontWeight(.medium)
+            Spacer()
+        }
+        .frame(width: UIScreen.main.bounds.width * 0.9, height: 75)
+        .background(Color.gray.opacity(0.1))
+        .cornerRadius(25)
+        .padding(.bottom, 2)
     }
 }
