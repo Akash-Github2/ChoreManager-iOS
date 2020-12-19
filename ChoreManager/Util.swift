@@ -7,6 +7,31 @@
 
 import SwiftUI
 
+class EnvData: ObservableObject {
+    @Published var currViewIndex = 0
+    @Published var lastViewIndex = -1
+}
+
+struct Util {
+    
+    static var indexMap: [ToString] = [HomeView(), CalendarView(), NotesView(), SettingsView(), AddTaskView()]
+    
+    static var indexMapAnyView: [AnyView] = [AnyView(HomeView()), AnyView(CalendarView()), AnyView(NotesView()), AnyView(SettingsView()), AnyView(AddTaskView())]
+    
+    static func retIndexNum(view: ToString) -> Int {
+        for i in 0..<indexMap.count {
+            if indexMap[i].toString() == view.toString() {
+                return i
+            }
+        }
+        return -1
+    }
+}
+
+protocol ToString {
+    func toString() -> String
+}
+
 extension Date {
     func toCustomString() -> String {
         let dateFormatter = DateFormatter()
