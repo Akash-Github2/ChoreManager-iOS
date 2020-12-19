@@ -69,13 +69,11 @@ struct ContentView: View {
                         .font(Font.title.weight(.bold))
                         .frame(width: 10, height: 10)
                 }
-                .offset(x:-5, y:25)
+                .offset(x:-12, y:32)
             )
             .onAppear() {
                 daysOfWeekArr = getDaysOfWeekInfo()
-                print(daysOfWeekArr)
                 dayNumArr = getDayNumsInfo()
-                print(dayNumArr)
             }
         }
         
@@ -141,14 +139,14 @@ struct DayOfWeekSmallIcon: View {
                 .fontWeight(.medium)
                 .padding(.bottom, 2)
             Text(dayNumStr)
-                .fontWeight(.medium)
+                .fontWeight(.semibold)
                 .padding(.bottom, -1)
             Circle()
                 .frame(width:5,height:5)
                 .foregroundColor(.blue)
                 .opacity(anyTasks ? 1 : 0)
         }
-        .padding(.horizontal, 5)
+        .frame(width: (UIScreen.main.bounds.width - 30)/7 - 5)
         .padding(.vertical, 9)
         .background(data.selectedArr[ind] ? Color.blue.opacity(0.15) : Color.clear)
         .cornerRadius(7)
