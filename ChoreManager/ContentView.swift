@@ -14,8 +14,8 @@ class DataClass: ObservableObject {
     @Published var titleTxt = "Today"
     @Published var selectedInd = 0
     let shortToLongWeekDayMap = ["MON": "Monday", "TUE": "Tuesday", "WED": "Wednesday", "THU": "Thursday", "FRI": "Friday", "SAT": "Saturday", "SUN": "Sunday"]
-    @Published var daysOfWeekArr: [String] = ["", "", "", "", "", "", ""]
-    @Published var dayNumArr: [String] = ["", "", "", "", "", "", ""]
+    @Published var daysOfWeekArr: [String] = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"]
+    @Published var dayNumArr: [String] = ["01", "02", "03", "04", "05", "06", "07"]
     @Published var anyTasksArr: [Bool] = [true, false, true, true, false, true, true]
     @Published var datesOfWeekArr: [Date] = [Date(), Date(), Date(), Date(), Date(), Date(), Date()]
 }
@@ -35,11 +35,7 @@ struct ContentView: View {
                         .fontWeight(.bold)
                         .padding(.leading, 15)
                     Spacer()
-                    ZStack {
-                        CircleTimer()
-                        Text("4")
-                            .fontWeight(.medium)
-                    }
+                    NumTasksLeftCircle(numTasks: getNumTasksForDay())
                     .padding(.trailing, 15)
                 }
                 .padding(.top, 15)
@@ -55,7 +51,7 @@ struct ContentView: View {
                 .padding(.bottom, 5)
                 
                 ScrollView {
-                    if !isDayEmpty() {
+                    if getNumTasksForDay() > 0 {
                         ForEach(taskEntries) { entry in
                             //Each cell
                             if isDateSameDay(date1: data.datesOfWeekArr[data.selectedInd], date2: entry.dueDate!) {
@@ -95,7 +91,8 @@ struct ContentView: View {
                 data.daysOfWeekArr = getDaysOfWeekInfo()
                 data.dayNumArr = getDayNumsInfo()
                 data.datesOfWeekArr = getDatesOfWeek()
-                addItem(dueDate: Date().addingTimeInterval(TimeInterval(3*86400)), isCompleted: "0", name: "Do Dishes", taskDescr: "N/A", usersList: "Joe")
+                addItem(dueDate: Date().addingTimeInterval(TimeInterval(0*86400)), isCompleted: "0", name: "Go for a Run", taskDescr: "N/A", usersList: "Joe")
+                //addItem(dueDate: Date().addingTimeInterval(TimeInterval(3*86400)), isCompleted: "0", name: "Do Dishes", taskDescr: "N/A", usersList: "Joe")
             }
         }
         
@@ -136,15 +133,6 @@ struct ContentView: View {
         return datesArr
     }
     
-    func isDayEmpty() -> Bool {
-        for taskEntry in taskEntries {
-            if isDateSameDay(date1: data.datesOfWeekArr[data.selectedInd], date2: taskEntry.dueDate!) {
-                return false
-            }
-        }
-        return true
-    }
-    
     func isDateSameDay(date1: Date, date2: Date) -> Bool {
         let df = DateFormatter()
         df.dateFormat = "EEE"
@@ -155,6 +143,16 @@ struct ContentView: View {
         }
         let diff = abs(date1.timeIntervalSinceReferenceDate - date2.timeIntervalSinceReferenceDate)
         return diff < 86400
+    }
+    
+    func getNumTasksForDay() -> Int {
+        var count = 0
+        for taskEntry in taskEntries {
+            if isDateSameDay(date1: data.datesOfWeekArr[data.selectedInd], date2: taskEntry.dueDate!) {
+                count += 1
+            }
+        }
+        return count
     }
     
     //Core data
@@ -175,20 +173,31 @@ struct ContentView: View {
     }
 }
 
-struct CircleTimer: View {
+
+struct NumTasksLeftCircle: View {
+    
+    let numTasks: Int
     
     var body: some View {
         ZStack {
             Circle()
                 .trim(from: 0, to: 1)
-                .stroke(Color.black.opacity(0.09), style: StrokeStyle(lineWidth: 5, lineCap: .round))
+                .stroke(retColorForNumTasks().opacity(0.5), style: StrokeStyle(lineWidth: 5, lineCap: .round))
                 .frame(width: 40, height: 40)
-            Circle()
-                .trim(from: 0, to: CGFloat(6) / CGFloat(10))
-                .stroke(Color.green, style: StrokeStyle(lineWidth: 5, lineCap: .round))
-                .frame(width: 40, height: 40)
+                .rotationEffect(.init(degrees: -90))
+            Text("\(numTasks)")
+                .fontWeight(.medium)
         }
-        .rotationEffect(.init(degrees: -90))
+    }
+    
+    func retColorForNumTasks() -> Color {
+        if numTasks == 0 {
+            return .green
+        } else if numTasks >= 1 && numTasks <= 5 {
+            return .yellow
+        } else {
+            return .red
+        }
     }
 }
 
