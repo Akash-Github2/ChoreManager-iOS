@@ -211,19 +211,21 @@ struct DayOfWeekSmallIcon: View {
     var body: some View {
         VStack (alignment: .center) {
             Text(data.daysOfWeekArr[ind])
+                .foregroundColor(ind == data.selectedInd ? .white : .black)
                 .fontWeight(.medium)
                 .padding(.bottom, 2)
             Text(data.dayNumArr[ind])
+                .foregroundColor(ind == data.selectedInd ? .white : .black)
                 .fontWeight(.semibold)
                 .padding(.bottom, -1)
             Circle()
                 .frame(width:5,height:5)
-                .foregroundColor(.blue)
+                .foregroundColor(ind == data.selectedInd ? .black : .blue)
                 .opacity(!isDayEmpty() ? 1 : 0)
         }
         .frame(width: (UIScreen.main.bounds.width - 30)/7 - 5)
         .padding(.vertical, 9)
-        .background(ind == data.selectedInd ? Color.blue.opacity(0.15) : Color.clear)
+        .background(ind == data.selectedInd ? Color(#colorLiteral(red: 0, green: 0.2536310807, blue: 1, alpha: 0.6901454299)) : Color.clear)
         .cornerRadius(7)
         .onTapGesture {
             data.selectedInd = ind
@@ -282,15 +284,21 @@ struct ToDoListRow: View {
             }
             .padding(.leading, 15)
             .padding(.trailing, 15)
-            Text(taskName)
-                .font(.system(size: 25))
-                .fontWeight(.medium)
+            VStack (alignment: .leading) {
+                Text(taskName)
+                    .font(.system(size: 25))
+                    .padding(.bottom, -4)
+                Text((taskEntry.dueDate ?? Date()).toCustomString())
+                    .font(.system(size: 13))
+                    .fontWeight(.medium)
+                    .opacity(taskEntry.dueDate == nil ? 0 : 0.6)
+            }
             Spacer()
         }
         .frame(width: UIScreen.main.bounds.width * 0.9, height: 75)
         .background(Color.gray.opacity(0.1))
         .cornerRadius(25)
-        .padding(.bottom, 2)
+        .padding(.bottom, -3)
     }
     
     func removeEntry() {
@@ -302,3 +310,4 @@ struct ToDoListRow: View {
         }
     }
 }
+
