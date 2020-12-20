@@ -8,8 +8,6 @@
 import SwiftUI
 
 struct CalendarView: View, ToString {
-    @Environment(\.colorScheme) var cs
-    @EnvironmentObject var envData: EnvData
     
     var body: some View {
         Text("Calendar View!")

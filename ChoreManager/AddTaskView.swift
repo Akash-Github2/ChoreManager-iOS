@@ -29,65 +29,52 @@ struct AddTaskView: View, ToString {
     @ObservedObject var choreData = ChoreData()
     
     var body: some View {
-        ZStack {
-            VStack {
-                ZStack {
-                    CustomNavBarSmall(title: "Add New Chore", backIndex: envData.lastViewIndex, currIndex: envData.currViewIndex)
-                    HStack {
-                        Spacer()
-                        Button(action: {
-                            print("save")
-                            addItem(dueDate: choreData.date, isCompleted: "0", name: choreData.name, taskDescr: choreData.description, usersList: "Joe")
-                            reset()
-                            envData.currViewIndex = envData.lastViewIndex
-                            envData.lastViewIndex = -1
-                        }) {
-                            Text("Save")
-                                .padding(.trailing, 15)
-                                .offset(y: 5)
-                        }
-                        .disabled(choreData.name.count == 0)
-                    }
-                }
-                List {
-                    
-                    HStack {
-                        Text("Chore Name")
-                        Spacer()
-                        TextField("E.g. Do dishes", text:$choreData.name)
-                            .padding(8)
-                            .font(Font.system(size: 15, weight: .medium))
-                            .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.blue, lineWidth: 1))
+        VStack {
+            ZStack {
+                CustomNavBarSmall(title: "Add New Chore", backIndex: envData.lastViewIndex, currIndex: envData.currViewIndex)
+                HStack {
+                    Spacer()
+                    Button(action: {
+                        print("save")
+                        addItem(dueDate: choreData.date, isCompleted: "0", name: choreData.name, taskDescr: choreData.description, usersList: "Joe")
+                        reset()
+                        envData.currViewIndex = envData.lastViewIndex
+                        envData.lastViewIndex = -1
+                    }) {
+                        Text("Save")
                             .padding(.trailing, 15)
-                            .padding(.leading, 10)
+                            .offset(y: 5)
                     }
-                    
-                    HStack {
-                        Text("Deadline")
-                        Spacer()
-                        DatePicker(selection: $choreData.date, in: Date()..., displayedComponents: .date) {
-                            EmptyView()
-                        }
-                        .padding(.trailing, -15)
-                        DatePicker(selection: $choreData.date, in: Date()..., displayedComponents: .hourAndMinute){
-                            EmptyView()
-                        }
-                    }
-                    
-                    VStack {
-                        Text("Description")
-                            .padding(.bottom, 5)
-                        TextEditor(text: $choreData.description)
-                            .padding(8)
-                            .font(Font.system(size: 15, weight: .medium))
-                            .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.blue, lineWidth: 1))
-                            .padding(.horizontal, 15)
-                    }
-                    .frame(height: 140)
+                    .disabled(choreData.name.count == 0)
                 }
             }
-            
-            
+            List {
+                
+                HStack {
+                    Text("Chore Name")
+                    Spacer()
+                    TextField("E.g. Do dishes", text:$choreData.name)
+                        .padding(8)
+                        .font(Font.system(size: 15, weight: .medium))
+                        .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.blue, lineWidth: 1))
+                        .padding(.trailing, 15)
+                        .padding(.leading, 10)
+                }
+                
+                DatePicker("Deadline", selection: $choreData.date)
+                    .datePickerStyle(CompactDatePickerStyle())
+                
+                VStack {
+                    Text("Description")
+                        .padding(.bottom, 5)
+                    TextEditor(text: $choreData.description)
+                        .padding(8)
+                        .font(Font.system(size: 15, weight: .medium))
+                        .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.blue, lineWidth: 1))
+                        .padding(.horizontal, 15)
+                }
+                .frame(height: 140)
+            }
         }
     }
     
@@ -114,7 +101,7 @@ struct AddTaskView: View, ToString {
     }
     
     func toString() -> String {
-        return "DriveInfoView"
+        return "AddTaskView"
     }
     
 }

@@ -33,15 +33,25 @@ struct HomeView: View, ToString {
                 HStack {
                     Spacer()
                     Button(action: {
-                        envData.currViewIndex = Util.retIndexNum(view: retNextView())
+                        envData.currViewIndex = Util.retIndexNum(view: retAddTaskView())
                         envData.lastViewIndex = Util.retIndexNum(view: self)
                     }) {
                         Image(systemName: "plus.circle.fill")
                             .font(Font.title.weight(.bold))
-                            .frame(width: 12, height: 12)
+                            .frame(width: 13, height: 13)
                     }
-                    .offset(x: -30, y: 18)
+                    .padding(.trailing, 23.5)
+                    
+                    Button(action: {
+                        envData.currViewIndex = Util.retIndexNum(view: retAddUserView())
+                        envData.lastViewIndex = Util.retIndexNum(view: self)
+                    }) {
+                        Image(systemName: "person.crop.circle.fill.badge.plus")
+                            .font(Font.title.weight(.bold))
+                            .frame(width: 13, height: 13)
+                    }
                 }
+                .offset(x: -25, y: 18)
             }
             HStack {
                 Text(data.titleTxt)
@@ -154,8 +164,12 @@ struct HomeView: View, ToString {
         return count
     }
     
-    func retNextView() -> ToString {
+    func retAddTaskView() -> ToString {
         return AddTaskView()
+    }
+    
+    func retAddUserView() -> ToString {
+        return AddUserView()
     }
     
     func toString() -> String {
@@ -284,6 +298,13 @@ struct ToDoListRow: View {
                     .opacity(taskEntry.dueDate == nil ? 0 : 0.6)
             }
             Spacer()
+            Button(action: {
+                
+            }) {
+                Image(systemName: "info.circle")
+                    .frame(width: 12, height: 12)
+            }
+            .padding(.trailing, 20)
         }
         .frame(width: UIScreen.main.bounds.width * 0.9, height: 67)
         .background(Color.gray.opacity(0.1))
@@ -301,3 +322,38 @@ struct ToDoListRow: View {
     }
 }
 
+struct DropdownMenu: View {
+    
+    @State var expanded = false
+    @State var usersList = ["Akash", "Aidan", "John", "Nick", "Logan", "Ben"]
+    @State var selectedList = [true, true, true, true, true, true]
+    
+    var body: some View {
+        VStack {
+            Button(action: {
+                expanded.toggle()
+            }) {
+                Text(isAllUsers() ? "All Users" : "Some Users")
+            }
+            if expanded {
+                ForEach((0..<usersList.count), id: \.self) { i in
+                    Button(action: {
+                        selectedList[i].toggle()
+                    }) {
+                        Text(usersList[i])
+                            .background(selectedList[i] ? Color.green : Color.blue)
+                    }
+                }
+            }
+        }
+    }
+    
+    func isAllUsers() -> Bool {
+        for selected in selectedList {
+            if !selected {
+                return false
+            }
+        }
+        return true
+    }
+}

@@ -24,6 +24,7 @@
 		38BCB6B8258E8F530092D1D1 /* CalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38BCB6B7258E8F530092D1D1 /* CalendarView.swift */; };
 		38BCB6BB258E8F6B0092D1D1 /* NotesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38BCB6BA258E8F6B0092D1D1 /* NotesView.swift */; };
 		38BCB6BE258E8F740092D1D1 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38BCB6BD258E8F740092D1D1 /* SettingsView.swift */; };
+		38BCB6C3258EFDCC0092D1D1 /* AddUserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38BCB6C2258EFDCC0092D1D1 /* AddUserView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -46,6 +47,7 @@
 		38BCB6B7258E8F530092D1D1 /* CalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarView.swift; sourceTree = "<group>"; };
 		38BCB6BA258E8F6B0092D1D1 /* NotesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotesView.swift; sourceTree = "<group>"; };
 		38BCB6BD258E8F740092D1D1 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		38BCB6C2258EFDCC0092D1D1 /* AddUserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddUserView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -85,6 +87,7 @@
 				38BCB6BA258E8F6B0092D1D1 /* NotesView.swift */,
 				38BCB6BD258E8F740092D1D1 /* SettingsView.swift */,
 				38BCB6A3258E81600092D1D1 /* AddTaskView.swift */,
+				38BCB6C2258EFDCC0092D1D1 /* AddUserView.swift */,
 				38BCB6A0258E75C50092D1D1 /* Util.swift */,
 				38BCB6A9258E84CD0092D1D1 /* Colors.swift */,
 				38BCB6B4258E873D0092D1D1 /* CustomTabBar.swift */,
@@ -192,6 +195,7 @@
 				38454054258DC7CE00BBA763 /* HomeView.swift in Sources */,
 				38BCB6AD258E85410092D1D1 /* CustomNavBarSmall.swift in Sources */,
 				38454052258DC7CE00BBA763 /* ChoreManagerApp.swift in Sources */,
+				38BCB6C3258EFDCC0092D1D1 /* AddUserView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -332,7 +336,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.akashcentral.ChoreManager;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -354,7 +358,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.akashcentral.ChoreManager;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};

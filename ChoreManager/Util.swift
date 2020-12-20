@@ -14,9 +14,9 @@ class EnvData: ObservableObject {
 
 struct Util {
     
-    static var indexMap: [ToString] = [HomeView(), CalendarView(), NotesView(), SettingsView(), AddTaskView()]
+    static var indexMap: [ToString] = [HomeView(), CalendarView(), NotesView(), SettingsView(), AddTaskView(), AddUserView()]
     
-    static var indexMapAnyView: [AnyView] = [AnyView(HomeView()), AnyView(CalendarView()), AnyView(NotesView()), AnyView(SettingsView()), AnyView(AddTaskView())]
+    static var indexMapAnyView: [AnyView] = [AnyView(HomeView()), AnyView(CalendarView()), AnyView(NotesView()), AnyView(SettingsView()), AnyView(AddTaskView()), AnyView(AddUserView())]
     
     static func retIndexNum(view: ToString) -> Int {
         for i in 0..<indexMap.count {
